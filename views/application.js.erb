@@ -1,0 +1,29 @@
+var scheme   = "<%= @scheme %>";
+var uri      = scheme + window.document.location.host + "/";
+var ws       = new WebSocket(uri);
+ws.onmessage = function(message) {
+  var data = JSON.parse(message.data);
+  var time = new Date(parseInt(data.sendtime));
+  var hours = time.getHours()>12 ? time.getHours()-12 : time.getHours();
+  var min = time.getMinutes()<10 ? '0'+time.getMinutes(): time.getMinutes();
+  var AMPM = time.getHours()>12 ? 'PM' : 'AM';
+
+  $("#chat-text").prepend("<dl class='dl-horizontal'><dt>" + data.handle + "</dt><dd>" + data.text + "<span class='text-muted pull-right' style='padding-left:5px'>" + hours+":"+min+" "+ AMPM + "</span></dd></dl>");
+};
+
+$("#input-form").on("submit", function(event) {
+  event.preventDefault();
+  var handle = $("#input-handle")[0].value;
+  $.cookie('handle', handle);
+  var text   = $("#input-text")[0].value;
+  var sendtime = $.now();
+  ws.send('{"handle":"'+handle+'","text":"'+text+'","sendtime":'+sendtime+'}')
+  // ws.send(JSON.stringify({ handle: handle, text: text, sendtime: sendtime }));
+  $("#input-text")[0].value = "";
+  $("#input-text").focus();
+});
+
+$( document ).ready(function() {
+  if ($.cookie('handle'))
+    $("#input-handle")[0].value = $.cookie('handle');
+});

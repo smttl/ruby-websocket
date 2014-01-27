@@ -1,6 +1,9 @@
 var scheme   = "<%= @scheme %>";
 var uri      = scheme + window.document.location.host + "/";
 var ws       = new WebSocket(uri);
+var lat      = 0;
+var lon      = 0;
+
 ws.onmessage = function(message) {
   addMessage(message.data);
 
@@ -13,13 +16,21 @@ $("#input-form").on("submit", function(event) {
   $.cookie('handle', handle);
   var text   = $("#input-text")[0].value;
   var sendtime = $.now();
-  ws.send('{"handle":"'+handle+'","text":"'+text+'","sendtime":'+sendtime+'}')
+  
+  ws.send('{"handle":"'+handle+'","text":"'+text+'","sendtime":'+sendtime+',"lat":"' + lat + '","lon":"'+lon +'"}')
   // ws.send(JSON.stringify({ handle: handle, text: text, sendtime: sendtime }));
   $("#input-text")[0].value = "";
   $("#input-text").focus();
 });
 
 $( document ).ready(function() {
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(success, error);
+  } else {
+    error('not supported');
+  }
+
   writeMessage(localStorage['message5']);
   writeMessage(localStorage['message4']);
   writeMessage(localStorage['message3']);
@@ -41,7 +52,14 @@ function writeMessage(json_data)
     var min = time.getMinutes()<10 ? '0'+time.getMinutes(): time.getMinutes();
     var AMPM = time.getHours()>12 ? 'PM' : 'AM';
 
-    $("#chat-text").prepend("<dl class='dl-horizontal'><dt>" + data.handle + "</dt><dd>" + data.text + "<span class='text-muted pull-right' style='padding-left:5px'>" + hours+":"+min+" "+ AMPM + "</span></dd></dl>");
+    if (time.getDate() == new Date($.now()).getDate() )
+    {
+      $("#chat-text").prepend("<dl class='dl-horizontal'><dt>" + data.handle + "</dt><dd>" + data.text + "<span class='text-muted pull-right' style='padding-left:5px'>" + hours+":"+min+" "+ AMPM + "<br />" + "Lat: " + lat + "<br />Lon: " +lon + "</span></dd></dl>");
+    }
+    else
+    { 
+      $("#chat-text").prepend("<dl class='dl-horizontal'><dt>" + data.handle + "</dt><dd>" + data.text + "<span class='text-muted pull-right' style='padding-left:5px'>" + time.getDate() + hours+":"+min+" "+ AMPM + "<br />" + "Lat: " + lat + "<br />Lon: " +lon + "</span></dd></dl>");
+    }
   }
 }
 
@@ -52,4 +70,15 @@ function addMessage(data)
   localStorage['message3'] = localStorage['message2']
   localStorage['message2'] = localStorage['message1']
   localStorage['message1'] = data
+}
+
+function error(msg) {
+  alert(msg)  
+}
+
+function success(position) {
+  lat = position.coords.latitude;
+  lon = position.coords.longitude;
+
+  $("#location").html('Location discovered at: <br />Lat: ' + lat + "<br />Lon: " +lon);
 }

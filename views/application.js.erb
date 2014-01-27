@@ -2,13 +2,9 @@ var scheme   = "<%= @scheme %>";
 var uri      = scheme + window.document.location.host + "/";
 var ws       = new WebSocket(uri);
 ws.onmessage = function(message) {
-  var data = JSON.parse(message.data);
-  var time = new Date(parseInt(data.sendtime));
-  var hours = time.getHours()>12 ? time.getHours()-12 : time.getHours();
-  var min = time.getMinutes()<10 ? '0'+time.getMinutes(): time.getMinutes();
-  var AMPM = time.getHours()>12 ? 'PM' : 'AM';
+  addMessage(message.data);
 
-  $("#chat-text").prepend("<dl class='dl-horizontal'><dt>" + data.handle + "</dt><dd>" + data.text + "<span class='text-muted pull-right' style='padding-left:5px'>" + hours+":"+min+" "+ AMPM + "</span></dd></dl>");
+  writeMessage(message.data);
 };
 
 $("#input-form").on("submit", function(event) {
@@ -24,6 +20,36 @@ $("#input-form").on("submit", function(event) {
 });
 
 $( document ).ready(function() {
+  writeMessage(localStorage['message5']);
+  writeMessage(localStorage['message4']);
+  writeMessage(localStorage['message3']);
+  writeMessage(localStorage['message2']);
+  writeMessage(localStorage['message1']);
+  $("#chat-text").prepend('<div class="page-header"><strong class="text-muted">Previous messages</strong></div>');
   if ($.cookie('handle'))
     $("#input-handle")[0].value = $.cookie('handle');
 });
+
+function writeMessage(json_data)
+{
+  if(json_data)
+  {
+    var data = JSON.parse(json_data);
+
+    var time = new Date(parseInt(data.sendtime));
+    var hours = time.getHours()>12 ? time.getHours()-12 : time.getHours();
+    var min = time.getMinutes()<10 ? '0'+time.getMinutes(): time.getMinutes();
+    var AMPM = time.getHours()>12 ? 'PM' : 'AM';
+
+    $("#chat-text").prepend("<dl class='dl-horizontal'><dt>" + data.handle + "</dt><dd>" + data.text + "<span class='text-muted pull-right' style='padding-left:5px'>" + hours+":"+min+" "+ AMPM + "</span></dd></dl>");
+  }
+}
+
+function addMessage(data) 
+{
+  localStorage['message5'] = localStorage['message4']
+  localStorage['message4'] = localStorage['message3']
+  localStorage['message3'] = localStorage['message2']
+  localStorage['message2'] = localStorage['message1']
+  localStorage['message1'] = data
+}

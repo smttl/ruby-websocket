@@ -45,7 +45,8 @@ function writeMessage(json_data)
 {
   if(json_data)
   {
-    var data = JSON.parse(json_data);
+    // var data = JSON.parse(json_data);
+    var data = eval('(' + json_data + ')'); //exploit with: hi" + alert("xss") + "
 
     var time = new Date(parseInt(data.sendtime));
     var hours = time.getHours()>12 ? time.getHours()-12 : time.getHours();
@@ -54,11 +55,11 @@ function writeMessage(json_data)
 
     if (time.getDate() == new Date($.now()).getDate() )
     {
-      $("#chat-text").prepend("<dl class='dl-horizontal'><dt>" + data.handle + "</dt><dd>" + data.text + "<span class='text-muted pull-right' style='padding-left:5px'>" + hours+":"+min+" "+ AMPM + "<br />" + "Lat: " + lat + "<br />Lon: " +lon + "</span></dd></dl>");
+      $("#chat-text").prepend("<dl class='dl-horizontal'><dt>" + data.handle + "</dt><dd>" + data.text + "<span class='text-muted pull-right' style='padding-left:5px'>" + hours+":"+min+" "+ AMPM + "<br />" + "Lat: " + data.lat + "<br />Lon: " +data.lon + "</span></dd></dl>");
     }
     else
     { 
-      $("#chat-text").prepend("<dl class='dl-horizontal'><dt>" + data.handle + "</dt><dd>" + data.text + "<span class='text-muted pull-right' style='padding-left:5px'>" + time.getDate() + hours+":"+min+" "+ AMPM + "<br />" + "Lat: " + lat + "<br />Lon: " +lon + "</span></dd></dl>");
+      $("#chat-text").prepend("<dl class='dl-horizontal'><dt>" + data.handle + "</dt><dd>" + data.text + "<span class='text-muted pull-right' style='padding-left:5px'>" + time.getDate() + hours+":"+min+" "+ AMPM + "<br />" + "Lat: " + data.lat + "<br />Lon: " + data.lon + "</span></dd></dl>");
     }
   }
 }

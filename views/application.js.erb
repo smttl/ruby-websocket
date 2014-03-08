@@ -55,11 +55,11 @@ function writeMessage(json_data)
 
     if (time.getDate() == new Date($.now()).getDate() )
     {
-      $("#chat-text").prepend("<dl class='dl-horizontal'><dt>" + data.handle + "</dt><dd>" + data.text + "<span class='text-muted pull-right' style='padding-left:5px'>" + hours+":"+min+" "+ AMPM + "<br />" + "Lat: " + data.lat + "<br />Lon: " +data.lon + "</span></dd></dl>");
+      $("#chat-text").prepend("<dl class='dl-horizontal'><dt>" + data.handle + "</dt><dd>" + data.text + "<span class='text-muted pull-right' style='padding-left:5px'>" + hours+":"+min+" "+ AMPM + "<br />" + "<img src='http://maps.googleapis.com/maps/api/staticmap?center="+data.lat+","+data.lon+"&zoom=11&size=300x100&sensor=false&markers=color:red%7Clabel:A%7C"+data.lat+","+data.lon+"'></span></dd></dl>");
     }
     else
     { 
-      $("#chat-text").prepend("<dl class='dl-horizontal'><dt>" + data.handle + "</dt><dd>" + data.text + "<span class='text-muted pull-right' style='padding-left:5px'>" + time.getDate() + hours+":"+min+" "+ AMPM + "<br />" + "Lat: " + data.lat + "<br />Lon: " + data.lon + "</span></dd></dl>");
+      $("#chat-text").prepend("<dl class='dl-horizontal'><dt>" + data.handle + "</dt><dd>" + data.text + "<span class='text-muted pull-right' style='padding-left:5px'>" + time.getDate() + hours+":"+min+" "+ AMPM + "<br />" + "<img src='http://maps.googleapis.com/maps/api/staticmap?center="+data.lat+","+data.lon+"&zoom=11&size=300x100&sensor=false&markers=color:red%7Clabel:A%7C"+data.lat+","+data.lon+"'></span></dd></dl>");
     }
   }
 }
@@ -81,5 +81,5 @@ function success(position) {
   lat = position.coords.latitude;
   lon = position.coords.longitude;
 
-  $("#location").html('Location discovered at: <br />Lat: ' + lat + "<br />Lon: " +lon);
+  $("#location").html("Found you at: <br /><img src='http://maps.googleapis.com/maps/api/staticmap?center="+lat+","+lon+"&zoom=11&size=300x200&sensor=false&markers=color:red%7Clabel:A%7C"+lat+","+lon+"'>");
 }
